@@ -1,4 +1,5 @@
 export * from './navbar'
+export * from './animated-top-dock'
 export * from './demo-mode-indicator'
 export * from './demo-guide'
 export * from './footer'

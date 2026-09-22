@@ -9,7 +9,7 @@ export interface Notification {
   created_at: string
 }
 
-export let demoNotifications: Notification[] = [
+export const demoNotifications: Notification[] = [
   {
     id: 'notif-1',
     user_id: 'farmer1',

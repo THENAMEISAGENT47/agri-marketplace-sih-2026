@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase/client'
-import { addNotification, getUserNotifications, getUnreadCount, markAsRead, demoNotifications } from '@/lib/demo/notifications'
+import { supabase, isSupabaseConfigured } from '@/lib/supabase/client'
+import { addNotification, getUserNotifications, markAsRead } from '@/lib/demo/notifications'
 
 export async function GET(request: NextRequest) {
   try {
@@ -14,34 +14,36 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Try to use real database first with timeout
-    try {
-      const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), 3000) // 3 second timeout
+    // Try to use real database only if configured
+    if (isSupabaseConfigured()) {
+      try {
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), 1200)
 
-      const { data: notifications, error } = await supabase
-        .from('notifications')
-        .select('*')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false })
+        const { data: notifications, error } = await supabase
+          .from('notifications')
+          .select('*')
+          .eq('user_id', userId)
+          .order('created_at', { ascending: false })
+          .abortSignal(controller.signal)
 
-      clearTimeout(timeoutId)
+        clearTimeout(timeoutId)
 
-      if (error) throw error
-
-      return NextResponse.json(notifications)
-    } catch (dbError) {
-      console.log('Database error, using demo data:', dbError)
-      // Fall back to demo data
+        if (!error && notifications) {
+          return NextResponse.json(notifications)
+        }
+      } catch (dbError) {
+        console.log('Database error, using demo data:', dbError)
+      }
     }
 
     // Demo fallback
     const userNotifications = getUserNotifications(userId)
     return NextResponse.json(userNotifications)
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Notifications fetch error:', error)
     return NextResponse.json(
-      { error: error.message || 'Failed to fetch notifications' },
+      { error: error instanceof Error ? error.message : 'Failed to fetch notifications' },
       { status: 500 }
     )
   }
@@ -98,10 +100,10 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json(notification)
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Notification creation error:', error)
     return NextResponse.json(
-      { error: error.message || 'Failed to create notification' },
+      { error: error instanceof Error ? error.message : 'Failed to create notification' },
       { status: 500 }
     )
   }
@@ -143,10 +145,10 @@ export async function PATCH(request: NextRequest) {
     }
 
     return NextResponse.json({ success: true })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Notification update error:', error)
     return NextResponse.json(
-      { error: error.message || 'Failed to update notification' },
+      { error: error instanceof Error ? error.message : 'Failed to update notification' },
       { status: 500 }
     )
   }

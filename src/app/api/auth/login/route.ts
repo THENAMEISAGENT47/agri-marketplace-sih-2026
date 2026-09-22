@@ -49,10 +49,10 @@ export async function POST(request: NextRequest) {
       },
       session: authData.session,
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Login error:', error)
     return NextResponse.json(
-      { error: error.message || 'Login failed' },
+      { error: error instanceof Error ? error.message : 'Login failed' },
       { status: 500 }
     )
   }

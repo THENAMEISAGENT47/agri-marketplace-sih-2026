@@ -1,15 +1,15 @@
 import { Order } from '@/types/orders'
 
-export let demoOrders: Order[] = [
+export const demoOrders: Order[] = [
   {
     id: 'ORD-001',
     buyer_id: 'buyer1',
     buyer_name: 'Amit Sharma',
     status: 'delivered',
-    total_amount: 19500,
-    logistics_cost: 1200,
-    logistics_savings: 800,
-    intermediary_savings: 3300,
+    total_amount: 19100,
+    logistics_cost: 0,
+    logistics_savings: 0,
+    intermediary_savings: 2865,
     delivery_address: 'Market Area, Thane',
     delivery_lat: 19.033,
     delivery_lng: 73.0297,

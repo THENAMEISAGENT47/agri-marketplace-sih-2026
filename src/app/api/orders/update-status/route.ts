@@ -163,10 +163,10 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(demoOrders[orderIndex])
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Order status update error:', error)
     return NextResponse.json(
-      { error: error.message || 'Failed to update order status' },
+      { error: error instanceof Error ? error.message : 'Failed to update order status' },
       { status: 500 }
     )
   }

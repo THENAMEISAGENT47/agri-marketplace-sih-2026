@@ -14,6 +14,33 @@ export interface MatchingCriteria {
   max_distance?: number // in km
 }
 
+export interface ScoreBreakdown {
+  quantity_match: number
+  price_competitiveness: number
+  proximity: number
+  quality_match: number
+  availability: number
+  farmer_reliability: number
+}
+
+export interface SupplierCandidate {
+  farmer_id: string
+  farmer_name: string
+  location_lat: number
+  location_lng: number
+  farmer_rating?: number
+  product_id: string
+  product_name: string
+  variety?: string
+  available_quantity: number
+  unit: string
+  price_per_unit: number
+  quality_grade: string
+  harvest_date: string
+  availability_date: string
+  is_available: boolean
+}
+
 export interface SupplierMatch {
   farmer_id: string
   farmer_name: string
@@ -33,14 +60,7 @@ export interface SupplierMatch {
   availability_date: string
   distance: number // in km
   match_score: number // 0-100
-  score_breakdown: {
-    quantity_match: number
-    price_competitiveness: number
-    proximity: number
-    quality_match: number
-    availability: number
-    farmer_reliability: number
-  }
+  score_breakdown: ScoreBreakdown
   match_reasons: string[]
   total_cost: number
   can_fulfill: boolean
@@ -70,9 +90,9 @@ function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
 
 // Calculate match score for a single supplier
 function calculateMatchScore(
-  supplier: any,
+  supplier: SupplierCandidate,
   criteria: MatchingCriteria
-): { score: number; breakdown: any; reasons: string[] } {
+): { score: number; breakdown: ScoreBreakdown; reasons: string[] } {
   const breakdown = {
     quantity_match: 0,
     price_competitiveness: 0,
@@ -179,14 +199,15 @@ function calculateMatchScore(
   }
 
   // 6. Farmer Reliability (0-10 points)
-  const ratingScore = (supplier.farmer_rating / 5) * 10
+  const farmerRating = supplier.farmer_rating ?? 4.5
+  const ratingScore = (farmerRating / 5) * 10
   breakdown.farmer_reliability = ratingScore
-  if (supplier.farmer_rating >= 4.5) {
-    reasons.push(`Highly rated farmer (${supplier.farmer_rating}/5)`)
-  } else if (supplier.farmer_rating >= 4.0) {
-    reasons.push(`Well-rated farmer (${supplier.farmer_rating}/5)`)
+  if (farmerRating >= 4.5) {
+    reasons.push(`Highly rated farmer (${farmerRating}/5)`)
+  } else if (farmerRating >= 4.0) {
+    reasons.push(`Well-rated farmer (${farmerRating}/5)`)
   } else {
-    reasons.push(`Farmer rating: ${supplier.farmer_rating}/5`)
+    reasons.push(`Farmer rating: ${farmerRating}/5`)
   }
 
   // Calculate total score
@@ -233,7 +254,7 @@ function findOptimalCombination(
 
 // Main matching function
 export function findMatchingSuppliers(
-  suppliers: any[],
+  suppliers: SupplierCandidate[],
   criteria: MatchingCriteria
 ): MatchingResult {
   // Filter suppliers by product name and availability
@@ -287,7 +308,7 @@ export function findMatchingSuppliers(
         lat: supplier.location_lat,
         lng: supplier.location_lng,
       },
-      farmer_rating: supplier.farmer_rating,
+      farmer_rating: supplier.farmer_rating ?? 4.5,
       product_id: supplier.product_id,
       product_name: supplier.product_name,
       product_variety: supplier.variety,

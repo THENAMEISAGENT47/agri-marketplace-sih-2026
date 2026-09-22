@@ -80,3 +80,17 @@ export function canTransitionTo(currentStatus: OrderStatus, newStatus: OrderStat
 export function isCancellable(status: OrderStatus): boolean {
   return ['pending', 'confirmed', 'processing'].includes(status)
 }
+
+export function formatOrderStatus(status: string): string {
+  const map: Record<string, string> = {
+    pending: 'Pending',
+    confirmed: 'Confirmed',
+    processing: 'Processing',
+    ready_for_pickup: 'Ready for Pickup',
+    shipped: 'Shipped',
+    delivered: 'Delivered',
+    cancelled: 'Cancelled',
+    rejected: 'Rejected',
+  }
+  return map[status] || status.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+}

@@ -41,10 +41,10 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(result)
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Matching error:', error)
     return NextResponse.json(
-      { error: error.message || 'Failed to find matching suppliers' },
+      { error: error instanceof Error ? error.message : 'Failed to find matching suppliers' },
       { status: 500 }
     )
   }

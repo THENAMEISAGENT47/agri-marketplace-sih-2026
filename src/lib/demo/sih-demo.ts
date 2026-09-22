@@ -1,5 +1,5 @@
 import { addNotification } from './notifications'
-import { demoOrders, incrementDemoOrderCounter } from './orders'
+import { demoOrders } from './orders'
 import { decrementInventory, demoInventory } from './inventory'
 
 /**
@@ -66,6 +66,9 @@ export function setupSIHDemo() {
       },
     ],
   }
+
+  // Clear existing orders to ensure clean state and avoid duplicate demo orders
+  demoOrders.length = 0
 
   // Add the order to demo orders
   demoOrders.push(demoOrder)

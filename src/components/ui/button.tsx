@@ -1,10 +1,14 @@
 import React from 'react'
+import { cn } from '@/lib/utils'
+import { Loader2 } from 'lucide-react'
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'danger' | 'ghost' | 'outline' | 'warning'
-  size?: 'sm' | 'md' | 'lg'
+  variant?: 'primary' | 'secondary' | 'danger' | 'ghost' | 'outline' | 'warning' | 'success' | 'link'
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
   isLoading?: boolean
   children: React.ReactNode
+  leftIcon?: React.ReactNode
+  rightIcon?: React.ReactNode
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -14,41 +18,48 @@ export const Button: React.FC<ButtonProps> = ({
   children,
   className = '',
   disabled,
+  leftIcon,
+  rightIcon,
   ...props
 }) => {
-  const baseStyles = 'inline-flex items-center justify-center rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'
+  const baseStyles = 'inline-flex items-center justify-center font-semibold rounded-custom transition-all duration-150 active:scale-[0.99] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none select-none'
 
   const variantStyles = {
-    primary: 'bg-primary text-white hover:bg-primary-dark focus:ring-primary',
-    secondary: 'bg-secondary text-white hover:bg-yellow-600 focus:ring-secondary',
-    danger: 'bg-danger text-white hover:bg-red-700 focus:ring-danger',
-    ghost: 'bg-transparent text-foreground hover:bg-gray-100 focus:ring-gray-300',
-    outline: 'border-2 border-primary text-primary hover:bg-primary hover:text-white focus:ring-primary',
-    warning: 'bg-warning text-white hover:bg-yellow-600 focus:ring-warning',
+    primary: 'bg-forest-900 text-white hover:bg-forest-800 border border-emerald-600/40 shadow-xs hover:shadow-sm focus-visible:ring-emerald-500',
+    secondary: 'bg-card-bg text-foreground hover:bg-neutral-100 dark:hover:bg-neutral-800 border border-border shadow-xs focus-visible:ring-primary-500',
+    danger: 'bg-danger text-white hover:bg-red-700 border border-red-600/40 shadow-xs focus-visible:ring-red-500',
+    ghost: 'bg-transparent text-foreground hover:bg-neutral-100 dark:hover:bg-neutral-800 focus-visible:ring-neutral-400',
+    outline: 'border border-border bg-transparent text-foreground hover:bg-neutral-100 dark:hover:bg-neutral-800 shadow-2xs focus-visible:ring-primary-500',
+    warning: 'bg-harvest-600 text-white hover:bg-harvest-500 border border-amber-600/40 shadow-xs focus-visible:ring-amber-500',
+    success: 'bg-emerald-600 text-white hover:bg-emerald-500 border border-emerald-500/40 shadow-xs focus-visible:ring-emerald-500',
+    link: 'bg-transparent text-forest-900 dark:text-emerald-400 hover:underline underline-offset-2 p-0 h-auto font-medium',
   }
 
   const sizeStyles = {
-    sm: 'px-3 py-1.5 text-sm',
-    md: 'px-4 py-2 text-base',
-    lg: 'px-6 py-3 text-lg',
+    xs: 'px-2.5 py-1 text-xs gap-1',
+    sm: 'px-3 py-1.5 text-xs font-semibold gap-1.5',
+    md: 'px-4 py-2 text-xs sm:text-sm font-semibold gap-2',
+    lg: 'px-6 py-2.5 text-sm sm:text-base font-semibold gap-2',
+    xl: 'px-8 py-3.5 text-base sm:text-lg font-bold gap-2.5',
   }
 
   return (
     <button
-      className={`${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
+      className={cn(baseStyles, variantStyles[variant], variant !== 'link' && sizeStyles[size], className)}
       disabled={disabled || isLoading}
       {...props}
     >
       {isLoading ? (
-        <span className="flex items-center">
-          <svg className="animate-spin -ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-          Loading...
+        <span className="flex items-center gap-2">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          <span className="sr-only">Loading</span>
         </span>
       ) : (
-        children
+        <>
+          {leftIcon && <span className="shrink-0">{leftIcon}</span>}
+          {children}
+          {rightIcon && <span className="shrink-0">{rightIcon}</span>}
+        </>
       )}
     </button>
   )

@@ -5,8 +5,11 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button, Input, Select, Alert } from '@/components/ui'
 import { useAuth } from '@/hooks/useAuth'
+import { Sprout, UserPlus } from 'lucide-react'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 export default function RegisterPage() {
+  const { t } = useLanguage()
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -24,12 +27,12 @@ export default function RegisterPage() {
     setError('')
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match')
+      setError(t('auth.passwords_mismatch'))
       return
     }
 
     if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters')
+      setError(t('auth.password_min'))
       return
     }
 
@@ -37,22 +40,29 @@ export default function RegisterPage() {
 
     try {
       await signUp(formData.email, formData.password, formData.role as 'farmer' | 'buyer', formData.phone)
-      // Redirect to login page after successful registration
       router.push('/login?registered=true')
-    } catch (err: any) {
-      setError(err.message || 'Registration failed. Please try again.')
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Registration failed. Please try again.')
     } finally {
       setIsLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-8">
+    <div className="min-h-screen flex items-center justify-center bg-background px-4 py-8">
       <div className="max-w-md w-full">
-        <div className="bg-white rounded-lg shadow-lg p-8">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">Create Account</h1>
-            <p className="text-gray-600 mt-2">Join the agricultural marketplace</p>
+        {/* Brand */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-14 h-14 bg-linear-to-br from-primary to-primary-700 rounded-2xl shadow-lg mb-4">
+            <Sprout className="w-8 h-8 text-white" />
+          </div>
+          <h1 className="text-3xl font-bold text-foreground">{t('auth.register_title')}</h1>
+          <p className="text-muted-foreground mt-2">{t('auth.register_desc')}</p>
+        </div>
+
+        <div className="bg-card-bg rounded-2xl shadow-xl border border-border p-8">
+          <div className="text-center mb-6">
+            <h2 className="text-lg font-semibold text-foreground">{t('auth.register_get_started')}</h2>
           </div>
 
           {error && (
@@ -63,7 +73,7 @@ export default function RegisterPage() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <Input
-              label="Email"
+              label={t('auth.email')}
               type="email"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -71,24 +81,24 @@ export default function RegisterPage() {
               required
             />
             <Input
-              label="Phone (Optional)"
+              label={t('auth.phone_optional')}
               type="tel"
               value={formData.phone}
               onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
               placeholder="+91 9876543210"
             />
             <Select
-              label="I want to register as"
+              label={t('auth.role_label')}
               value={formData.role}
               onChange={(e) => setFormData({ ...formData, role: e.target.value as 'farmer' | 'buyer' })}
               options={[
-                { value: 'farmer', label: 'Farmer/FPO' },
-                { value: 'buyer', label: 'Buyer' },
+                { value: 'farmer', label: t('auth.role_farmer_option') },
+                { value: 'buyer', label: t('auth.role_buyer_option') },
               ]}
               required
             />
             <Input
-              label="Password"
+              label={t('auth.password')}
               type="password"
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
@@ -97,7 +107,7 @@ export default function RegisterPage() {
               minLength={6}
             />
             <Input
-              label="Confirm Password"
+              label={t('auth.confirm_password')}
               type="password"
               value={formData.confirmPassword}
               onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
@@ -109,18 +119,19 @@ export default function RegisterPage() {
               type="submit"
               variant="primary"
               size="lg"
-              className="w-full"
+              className="w-full font-semibold"
               isLoading={isLoading}
+              leftIcon={<UserPlus className="w-4 h-4" />}
             >
-              Create Account
+              {t('auth.btn_create_account')}
             </Button>
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-gray-600">
-              Already have an account?{' '}
-              <Link href="/login" className="text-primary hover:underline">
-                Sign In
+            <p className="text-muted-foreground text-sm">
+              {t('auth.already_account')}{' '}
+              <Link href="/login" className="text-primary dark:text-[#8FBF2E] font-semibold hover:underline">
+                {t('auth.signin_link')}
               </Link>
             </p>
           </div>

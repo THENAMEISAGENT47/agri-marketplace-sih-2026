@@ -36,7 +36,7 @@ export interface Farmer {
 export const demoAdminStats: AdminStats = {
   totalFarmers: 3,
   totalBuyers: 2,
-  totalProducts: 6,
+  totalProducts: 24,
   totalOrders: 5,
   totalTransactionValue: 56850,
   activeOrders: 2,

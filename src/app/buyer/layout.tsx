@@ -4,104 +4,127 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
-import { DemoModeIndicator } from '@/components/shared/demo-mode-indicator'
+import { LayoutDashboard, Sparkles, Store, Package, User, Globe, Sun, Moon } from 'lucide-react'
+import { PortalHeader } from '@/components/shared/portal-header'
+import { useLanguage } from '@/contexts/LanguageContext'
+import { useTheme } from '@/contexts/ThemeContext'
 
 export default function BuyerLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const pathname = usePathname()
   const { user } = useAuth()
+  const { language, setLanguage, t } = useLanguage()
+  const { theme, toggleTheme } = useTheme()
 
   const navigation = [
-    { name: 'Dashboard', href: '/buyer/dashboard', icon: '📊' },
-    { name: 'AI Matching', href: '/buyer/matching', icon: '🤖' },
-    { name: 'Marketplace', href: '/marketplace', icon: '🛒' },
-    { name: 'My Orders', href: '/buyer/orders', icon: '📦' },
-    { name: 'Profile', href: '/buyer/profile', icon: '👤' },
+    { name: t('portal.dashboard'), href: '/buyer/dashboard', icon: LayoutDashboard },
+    { name: t('portal.supplier_matching'), href: '/buyer/matching', icon: Sparkles },
+    { name: t('portal.marketplace'), href: '/marketplace', icon: Store },
+    { name: t('portal.my_orders'), href: '/buyer/orders', icon: Package },
+    { name: t('portal.profile'), href: '/buyer/profile', icon: User },
   ]
 
+  // Determine current page title
+  const currentNavItem = navigation.find(item => item.href === pathname)
+  const pageTitle = currentNavItem?.name || (pathname.includes('/matching') ? t('portal.supplier_matching') : t('portal.buyer_title'))
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <DemoModeIndicator />
+    <div className="min-h-screen bg-background text-foreground flex flex-col transition-colors">
       {/* Mobile sidebar backdrop */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-gray-600 bg-opacity-75 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
-      {/* Sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0`}>
-        <div className="flex items-center justify-center h-16 border-b border-border">
-          <Link href="/buyer/dashboard" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-secondary rounded-lg flex items-center justify-center">
-              <span className="text-white text-lg">🛒</span>
-            </div>
-            <span className="text-xl font-bold text-secondary">Buyer Portal</span>
-          </Link>
-        </div>
+      <div className="flex flex-1">
+        {/* Sidebar */}
+        <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-card-bg border-r border-border transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-200 ease-in-out lg:translate-x-0 lg:static lg:inset-0 flex flex-col`}>
+          <div className="flex items-center px-6 h-16 border-b border-border shrink-0">
+            <Link href="/buyer/dashboard" className="flex items-center space-x-2.5">
+              <div className="w-8 h-8 bg-forest-900 text-emerald-300 rounded-custom flex items-center justify-center font-bold text-sm shadow-xs ring-1 ring-emerald-600/30">
+                B
+              </div>
+              <div className="flex flex-col">
+                <span className="text-sm font-bold font-heading text-foreground tracking-tight leading-tight">{t('portal.buyer_title')}</span>
+                <span className="text-[10px] font-mono-data text-emerald-600 dark:text-emerald-400 uppercase leading-tight">Institutional B2B</span>
+              </div>
+            </Link>
+          </div>
 
-        <nav className="mt-8 px-4 space-y-2">
-          {navigation.map((item) => {
-            const isActive = pathname === item.href
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={`flex items-center px-4 py-3 rounded-lg transition-colors ${
-                  isActive
-                    ? 'bg-secondary text-white'
-                    : 'text-gray-700 hover:bg-gray-100'
-                }`}
+          <nav className="flex-1 mt-6 px-3 space-y-1 overflow-y-auto">
+            {navigation.map((item) => {
+              const isActive = pathname === item.href
+              const Icon = item.icon
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setSidebarOpen(false)}
+                  className={`flex items-center px-3.5 py-2.5 rounded-custom text-xs font-semibold transition-colors ${
+                    isActive
+                      ? 'bg-forest-900 text-white shadow-xs'
+                      : 'text-neutral-600 dark:text-neutral-400 hover:text-foreground hover:bg-neutral-100 dark:hover:bg-neutral-800'
+                  }`}
+                >
+                  <Icon className="mr-3 h-4 w-4 shrink-0" />
+                  <span>{item.name}</span>
+                </Link>
+              )
+            })}
+          </nav>
+
+          {/* Sidebar Footer Controls & User Card */}
+          <div className="mt-auto p-4 border-t border-border shrink-0 bg-card-bg space-y-3">
+            {/* Mobile drawer quick utility row */}
+            <div className="lg:hidden flex items-center justify-between gap-2 pt-1 pb-2 border-b border-border text-xs">
+              <button
+                onClick={() => setLanguage(language === 'en' ? 'hi' : 'en')}
+                className="flex-1 py-1.5 px-2 rounded-custom border border-border text-foreground hover:bg-neutral-100 dark:hover:bg-neutral-800 transition flex items-center justify-center gap-1.5"
               >
-                <span className="mr-3 text-xl">{item.icon}</span>
-                {item.name}
-              </Link>
-            )
-          })}
-        </nav>
-
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center text-white font-semibold">
-              {user?.email?.[0].toUpperCase()}
+                <Globe className="w-3.5 h-3.5 text-neutral-500" />
+                <span className="font-mono-data text-[11px] font-semibold">{language === 'en' ? 'EN / हिन्दी' : 'हिन्दी / EN'}</span>
+              </button>
+              <button
+                onClick={toggleTheme}
+                className="p-1.5 rounded-custom border border-border text-foreground hover:bg-neutral-100 dark:hover:bg-neutral-800 transition"
+                aria-label="Toggle Theme"
+              >
+                {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-neutral-600" />}
+              </button>
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 truncate">
-                {user?.email}
-              </p>
-              <p className="text-xs text-gray-500">Buyer</p>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      {/* Main content */}
-      <div className="lg:pl-64">
-        {/* Top bar */}
-        <div className="bg-white border-b border-border px-4 py-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between">
-            <button
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="lg:hidden p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100"
-            >
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
-            <div className="flex-1 flex justify-between items-center">
-              <h1 className="text-2xl font-semibold text-gray-900">
-                {navigation.find(item => item.href === pathname)?.name || 'Dashboard'}
-              </h1>
+            <div className="bg-neutral-50 dark:bg-neutral-900 rounded-custom p-3 border border-border flex items-center gap-3">
+              <div className="w-8 h-8 bg-forest-100 dark:bg-forest-950 text-forest-800 dark:text-emerald-300 rounded-custom flex items-center justify-center font-bold text-xs shrink-0 ring-1 ring-forest-600/20">
+                {user?.email?.[0]?.toUpperCase() ?? 'B'}
+              </div>
+              <div className="flex-1 min-w-0 overflow-hidden">
+                <p className="text-xs font-semibold text-foreground truncate">
+                  {user?.email || 'buyer1@demo.com'}
+                </p>
+                <p className="text-[10px] text-neutral-500 font-medium font-mono-data">{t('portal.buyer_account')}</p>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Page content */}
-        <div className="px-4 sm:px-6 lg:px-8 py-8">
-          {children}
+        {/* Main content area with Shared PortalHeader */}
+        <div className="flex-1 flex flex-col min-w-0">
+          <PortalHeader
+            portalName={t('portal.buyer_title')}
+            portalHref="/buyer/dashboard"
+            pageTitle={pageTitle}
+            onMenuClick={() => setSidebarOpen(!sidebarOpen)}
+          />
+
+          {/* Page content */}
+          <div className="flex-1 px-4 sm:px-6 lg:px-8 py-6 w-full max-w-7xl xl:max-w-[1440px] 2xl:max-w-[1680px]">
+            {children}
+          </div>
         </div>
       </div>
     </div>
   )
 }
+

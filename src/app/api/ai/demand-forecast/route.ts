@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { product_name, region = 'all', forecast_days = 30 } = body
+    const { product_name, forecast_days = 7 } = body
 
     // Validate input
     if (!product_name) {
@@ -37,18 +37,18 @@ export async function POST(request: NextRequest) {
     }
 
     // Demo fallback for SIH demonstration
-    const demoForecast = generateDemoForecast(product_name, forecast_days, region)
+    const demoForecast = generateDemoForecast(product_name, forecast_days)
     return NextResponse.json(demoForecast)
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Demand forecast error:', error)
     return NextResponse.json(
-      { error: error.message || 'Failed to generate demand forecast' },
+      { error: error instanceof Error ? error.message : 'Failed to generate demand forecast' },
       { status: 500 }
     )
   }
 }
 
-function generateDemoForecast(product_name: string, forecast_days: number, region: string) {
+function generateDemoForecast(product_name: string, forecast_days: number) {
   // Demo data for SIH demonstration
   const demoData: Record<string, { base: number; trend: number; volatility: number }> = {
     'Tomatoes': { base: 5000, trend: 0.02, volatility: 0.1 },

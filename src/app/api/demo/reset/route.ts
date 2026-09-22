@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { resetAllDemoData, getDemoState } from '@/lib/demo/reset'
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     // In a real application, you would verify admin credentials here
     // For demo purposes, we'll allow the reset without authentication
@@ -12,23 +12,23 @@ export async function POST(request: NextRequest) {
       ...result,
       currentState: getDemoState(),
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Demo reset error:', error)
     return NextResponse.json(
-      { error: error.message || 'Failed to reset demo data' },
+      { error: error instanceof Error ? error.message : 'Failed to reset demo data' },
       { status: 500 }
     )
   }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const state = getDemoState()
     return NextResponse.json(state)
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Demo state error:', error)
     return NextResponse.json(
-      { error: error.message || 'Failed to get demo state' },
+      { error: error instanceof Error ? error.message : 'Failed to get demo state' },
       { status: 500 }
     )
   }
