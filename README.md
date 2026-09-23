@@ -1,254 +1,246 @@
-# AgriMarketplace - Smart India Hackathon 2026
+# AgriMarketplace — Smart India Hackathon 2026
 
-A digital agricultural marketplace that directly connects farmers/FPOs with consumers and bulk buyers, reducing unnecessary intermediaries and increasing earnings for everyone in the supply chain.
+A digital agricultural procurement marketplace for connecting farmers/FPOs with buyers and coordinating supplier discovery, multi-supplier fulfilment, orders, inventory and logistics.
 
-## 🌾 Problem Statement (PS 26033)
+> **PS 26033**  
+> **Theme:** Agriculture, FoodTech & Rural Development  
+> **Category:** Software  
+> **Team:** Krishi Innovators
 
-Multiple intermediaries reduce farmers' earnings and increase consumer prices. This platform eliminates middlemen by creating direct connections between farmers and buyers.
+## Problem
 
-## ✨ Key Features
+Agricultural procurement can involve multiple intermediary layers between producers and buyers. This can reduce transparency, fragment supply, and make large-volume procurement harder for buyers and small producers.
 
-### For Farmers/FPOs
-- **Direct Selling**: List products directly to buyers without intermediaries
-- **Smart Pricing**: AI-powered demand forecasting for optimal pricing
-- **Order Management**: Track orders and manage deliveries
-- **Earnings Dashboard**: View total earnings and order history
-- **Location-Based**: Buyers can find farmers by location
+AgriMarketplace provides a digital coordination layer for:
 
-### For Buyers
-- **Direct Sourcing**: Buy directly from farmers at better prices
-- **Smart Matching**: AI-powered supplier matching for requirements
-- **Price Comparison**: Compare prices across multiple farmers
-- **Order Tracking**: Real-time order status and tracking
-- **Bulk Orders**: Support for large quantity orders
+- Direct farmer/FPO listings
+- Buyer requirements
+- Supplier matching
+- Multi-supplier allocation
+- Order and inventory management
+- Demand-forecasting workflows
+- Route-optimization workflows
 
-### Platform Features
-- **AI Demand Forecasting**: Predict future demand for better planning
-- **Route Optimization**: Efficient logistics planning and cost savings
-- **Real-time Analytics**: Platform impact metrics and insights
-- **Admin Dashboard**: User management and platform oversight
+## Prototype capabilities
 
-## 🚀 Tech Stack
+### Farmers / FPOs
+- List produce and inventory
+- Manage crop batches
+- View allocated orders
+- Track earnings and order information
+- Maintain producer profiles
+
+### Buyers
+- Browse produce listings
+- Create bulk procurement requirements
+- Run supplier matching
+- Place and track orders
+- View procurement information
+
+### Platform
+- Farmer / FPO / Buyer / Admin roles
+- Supabase authentication and PostgreSQL
+- Row-Level Security (RLS)
+- Supplier matching with transparent scoring
+- Demand forecasting workflow
+- Route optimization workflow
+- Orders and inventory
+- Notifications and analytics UI
+- English / Hindi interface
+- Responsive web experience
+
+## 800 kg tomato scenario
+
+The repository includes a demonstration scenario:
+
+- Buyer requirement: **800 kg tomatoes**
+- Ramesh Kumar: **500 kg @ ₹25/kg = ₹12,500**
+- Suresh FPO: **300 kg @ ₹22/kg = ₹6,600**
+- Combined requirement: **800 kg**
+
+This is prototype/demo data and should not be interpreted as a field-measured economic result.
+
+## Technical stack
 
 ### Frontend
-- **Next.js 14+**: React framework with App Router
-- **TypeScript**: Type-safe development
-- **Tailwind CSS**: Utility-first styling with agricultural theme
-- **Supabase**: Authentication, database, and real-time features
-- **React Query**: Data fetching and caching
-- **Zustand**: State management
-- **Recharts**: Data visualization
+- Next.js **16.3.5**
+- React **19.2.8**
+- TypeScript
+- Tailwind CSS v4
+- Zustand
+- TanStack React Query
+- Recharts
+- Zod
 
-### Backend
-- **Supabase PostgreSQL**: Primary database with RLS
-- **Supabase Auth**: Authentication and user management
-- **Next.js API Routes**: Business logic and API endpoints
+### Backend / data
+- Supabase PostgreSQL
+- Supabase Auth
+- Supabase Storage
+- Row-Level Security
+- Next.js API routes
 
-### AI/ML Services (Python)
-- **FastAPI**: AI microservices
-- **scikit-learn**: Demand forecasting models
-- **Custom algorithms**: Route optimization and matching
+### Python services
+- FastAPI
+- Demand-forecasting service
+- Route-optimization service
+- Demo fallbacks when Python services are unavailable
 
-## 📁 Project Structure
+### Current intelligence model
+The current matching, forecasting and routing implementation is **algorithmic/demo logic**. The repository does not currently claim production-trained ML performance.
+
+## Architecture
 
 ```
-agri-marketplace/
-├── src/
-│   ├── app/                    # Next.js App Router
-│   │   ├── login/             # Authentication pages
-│   │   ├── register/          # Registration pages
-│   │   ├── marketplace/       # Public marketplace
-│   │   └── api/               # API routes
-│   ├── components/
-│   │   ├── ui/                # Reusable UI components
-│   │   ├── farmer/            # Farmer-specific components
-│   │   ├── buyer/             # Buyer-specific components
-│   │   ├── admin/             # Admin-specific components
-│   │   └── shared/            # Shared components
-│   ├── lib/
-│   │   ├── supabase/          # Supabase client setup
-│   │   ├── validation/        # Zod schemas
-│   │   └── utils.ts           # Helper functions
-│   ├── services/
-│   │   ├── matching/          # Matching engine logic
-│   │   ├── logistics/         # Logistics calculations
-│   │   └── analytics/         # Analytics calculations
-│   ├── types/                 # TypeScript type definitions
-│   └── hooks/                 # Custom React hooks
-├── python-services/           # AI microservices
-│   ├── demand-forecasting/    # Demand forecasting service
-│   └── route-optimization/    # Route optimization service
-├── supabase/
-│   ├── migrations/            # Database migrations
-│   └── seed-data/             # Demo data scripts
-└── public/                    # Static assets
+Users
+  ↓
+Next.js / React
+  ↓
+Next.js API Routes
+  ↓
+Supabase / PostgreSQL
+  ↕
+Python / FastAPI
+  ├─ Demand Forecasting
+  └─ Route Optimization
 ```
 
-## 🛠️ Setup Instructions
+## Project structure
 
-### Prerequisites
-- Node.js 18+ 
-- npm or yarn
-- Supabase account (free tier works)
+```
+src/                    Next.js application
+src/components/         UI, role and AI components
+src/services/           Matching, logistics and analytics
+src/lib/                Auth, Supabase, demo and validation helpers
+src/types/              Database and API types
+python-services/        FastAPI services
+supabase/migrations/    Database schema, RLS and seed data
+public/                 Static assets
+```
 
-### Step 1: Install Dependencies
+## Setup
+
+### Install
+
 ```bash
 npm install
 ```
 
-### Step 2: Set Up Supabase
-1. Create a new project at [supabase.com](https://supabase.com)
-2. Go to Project Settings → API
-3. Copy your Project URL, anon key, and service role key
+### Environment
 
-### Step 3: Configure Environment Variables
-Create a `.env.local` file in the project root:
+Create a local `.env.local` using `.env.example`.
 
-```bash
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-NEXT_PUBLIC_APP_NAME=AgriMarketplace
-DEMAND_FORECASTING_SERVICE_URL=http://localhost:8001
-ROUTE_OPTIMIZATION_SERVICE_URL=http://localhost:8002
-NODE_ENV=development
+Required variables include:
+
+```text
+NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY
+SUPABASE_SERVICE_ROLE_KEY
+NEXT_PUBLIC_APP_URL
+DEMAND_FORECASTING_SERVICE_URL
+ROUTE_OPTIMIZATION_SERVICE_URL
+NODE_ENV
 ```
 
-### Step 4: Set Up Database
-1. Go to your Supabase project dashboard
-2. Navigate to SQL Editor
-3. Run the migration files in order:
-   - `supabase/migrations/001_initial_schema.sql`
-   - `supabase/migrations/002_rls_policies.sql`
-   - `supabase/migrations/003_seed_data.sql`
+Never commit local environment files or real credentials.
 
-### Step 5: (Optional) Set Up Python AI Services
+### Database
 
-The AI services have built-in demo fallbacks, so they work without Python. For full functionality:
+Run the migrations in order:
+
+```text
+supabase/migrations/001_initial_schema.sql
+supabase/migrations/002_rls_policies.sql
+supabase/migrations/003_seed_data.sql
+```
+
+### Optional Python services
 
 ```bash
-# Install Python dependencies
 cd python-services/demand-forecasting
 pip install -r requirements.txt
+python main.py
+```
 
-cd ../route-optimization
-pip install -r requirements.txt
+and:
 
-# Start services (in separate terminals)
-cd python-services/demand-forecasting
-python main.py  # Runs on port 8001
-
+```bash
 cd python-services/route-optimization
-python main.py  # Runs on port 8002
+pip install -r requirements.txt
+python main.py
 ```
 
-**Note:** The Next.js application will automatically use demo fallbacks if these services are not running.
+### Start the app
 
-### Step 6: Run Development Server
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Open `http://localhost:3000`.
 
-## 👥 Demo Credentials
+## Current status
 
-The seed data includes demo accounts for testing:
+### Implemented / demonstrated
+- Marketplace
+- Farmer/FPO portal
+- Buyer portal
+- Admin portal
+- Authentication
+- Role-based access
+- Supplier matching
+- Multi-supplier allocation
+- Demand forecasting workflow
+- Route optimization workflow
+- Orders and inventory
+- Analytics and notification UI
+- English / Hindi interface
 
-- **Farmer**: farmer1@demo.com / demo123
-- **Buyer**: buyer1@demo.com / demo123
-- **Admin**: admin@demo.com / demo123
+### Future deployment work
+- Payment gateway integration
+- Production ML training and validation
+- Live routing-provider integration
+- Production-grade external market/weather integrations
+- Native mobile application
+- Full production realtime notification infrastructure
 
-## 📊 Demo Scenario
+## Planned technologies not currently implemented
 
-The platform includes a complete demo scenario:
+The current repository does **not** contain active implementations for:
 
-1. **Farmer lists 500kg of tomatoes** - Available in marketplace
-2. **Buyer needs 800kg** - Can browse and search products
-3. **Multiple suitable farmers** - System shows matching suppliers
-4. **Matching engine** - Recommends best combination
-5. **AI demand forecast** - Shows expected tomato demand
-6. **Order placement** - Buyer can place orders
-7. **Logistics optimization** - Generates delivery plan
-8. **Farmer dashboard** - Shows orders and earnings
-9. **Buyer tracking** - Shows order status and tracking
-10. **Admin analytics** - Platform impact metrics
+- SQLite offline-sync architecture
+- OpenAI chatbot APIs
+- OpenWeatherMap
+- OpenRouteService / Google Maps production routing
+- XGBoost
+- Random Forest
+- A specialized linear-regression price prediction model
 
-## 🎯 Current Implementation Status
+Treat these as future architecture ideas unless they are added to the codebase.
 
-### ✅ Completed
-- Project setup with Next.js, TypeScript, Tailwind CSS
-- Database schema with 11 tables and proper relationships
-- Row-Level Security (RLS) policies
-- Demo seed data (3 farmers, 2 buyers, 8 products, sample orders)
-- Reusable UI component library
-- Landing page with platform overview
-- Authentication pages (login/register)
-- Marketplace page with product browsing
-- **Authentication system** with Supabase integration
-- **Farmer dashboard** with product management, orders, and profile
-- **Buyer dashboard** with orders, profile, and savings tracking
-- **AI Matching engine** with transparent scoring and supplier combinations
-- **AI Demand forecasting service** (Python FastAPI with demo fallback)
-- **AI Route optimization service** (Python FastAPI with demo fallback)
-- **AI Services UI components** integrated into buyer dashboard
-- Responsive design for mobile, tablet, and desktop
+## Security notes
 
-### � In Progress
-- Admin dashboard with user management and platform analytics
-- Real-time order tracking with live updates
-- Notification system for order events
+- Environment files are ignored by Git.
+- Supabase service-role access is intended for server-side use.
+- RLS policies are included in the database migrations.
+- Input validation uses Zod.
+- The public seed data is demo data and should not be replaced with real personal information.
 
-### 📋 Planned
-- Payment integration
-- Advanced analytics with charts
-- Mobile app (React Native)
-- Integration with real routing APIs (OSRM/Google Maps)
-- Production ML models for demand forecasting
+## Official ecosystem references
 
-## 🔒 Security Features
+- e-NAM — National Agriculture Market
+- AGMARKNET — Agricultural Marketing Information Network
+- data.gov.in — Government of India open-data platform
 
-- Row-Level Security (RLS) for database access
-- Role-based access control (farmer, buyer, admin)
-- Secure password hashing
-- Input validation with Zod schemas
-- Environment variable protection
-- API route protection
+## Repository
 
-## 📈 Platform Impact
+https://github.com/THENAMEISAGENT47/agri-marketplace-sih-2026
 
-The platform aims to deliver:
-- **25% increase** in farmer earnings
-- **30% reduction** in consumer prices  
-- **40% savings** in logistics costs
-- **2-3 intermediaries** eliminated from supply chain
+## Development commands
 
-## 🤝 Contributing
+```bash
+npm run dev
+npm run build
+npm run start
+npm run lint
+```
 
-This is a Smart India Hackathon 2026 project. For contributions, please follow the standard Git workflow:
-
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
-
-## 📝 License
-
-This project is created for Smart India Hackathon 2026.
-
-## 🙏 Acknowledgments
-
-- Smart India Hackathon 2026
-- Supabase for the excellent backend services
-- Next.js team for the amazing framework
-- All contributors and team members
-
-## 📞 Support
-
-For questions or support during the hackathon, please contact the team through the official SIH channels.
-
----
-
-**Built with ❤️ for Smart India Hackathon 2026**
+Built for **Smart India Hackathon 2026** by **Krishi Innovators**.
